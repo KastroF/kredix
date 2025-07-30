@@ -1,3 +1,4 @@
+const DeviceToken = require("../models/DeviceToken");
 const Order = require("../models/Order");
 const sendNotification = require("../utils/SendPushNotification"); 
 
