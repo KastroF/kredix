@@ -14,7 +14,8 @@ const orderSchema = mongoose.Schema({
       clientPhone: {type: String}, 
       phone: {type: String}, 
       moneyType: {type: String}, 
-      paymentId: {type: String}
+      paymentId: {type: String}, 
+      date: {type : Date, default: new Date}
 })
 
 module.exports = mongoose.model("Order", orderSchema);
