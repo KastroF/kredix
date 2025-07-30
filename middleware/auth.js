@@ -11,13 +11,13 @@ module.exports = async (req, res, next) => {
    
      const token = req.headers.authorization.split(" ")[1];
       
-     console.log(token);
+ 
      const decodedToken = await jwt.verify(
       token,
       process.env.CODETOKEN
     );
     
-    console.log("le detoken", decodedToken);
+
 
     const userId = decodedToken.userId;
      

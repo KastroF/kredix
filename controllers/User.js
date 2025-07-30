@@ -62,7 +62,7 @@ exports.signup = async (req, res) => {
     const existingUser = await User.findOne({ email });
 
     if (existingUser) {
-      
+
         return res.status(200).json({ status: 3, message: "Email déjà utilisé" });
     }
 
@@ -71,9 +71,6 @@ exports.signup = async (req, res) => {
 
     const token = jwt.sign({ userId: user._id }, process.env.CODETOKEN, );
 
-
-    console.log(token); 
-    console.log(user); 
 
     return res.status(201).json({ status: 0, token, user });
 
@@ -137,8 +134,7 @@ exports.signin = async (req, res) => {
       }
 
       const token = jwt.sign({ userId: user._id }, process.env.CODETOKEN, { expiresIn: '7d' });
-      console.log(user); 
-      console.log(token);
+ 
       return res.status(200).json({ status: 0, token, user });
     }
 
