@@ -11,6 +11,7 @@ const orderSchema = mongoose.Schema({
       amount2: {type: Number}, 
       type: {type: String}, 
       status: {type: String, default: "pending"}, 
+      isUse: {type: Boolean, default: false},
       clientPhone: {type: String}, 
       phone: {type: String}, 
       moneyType: {type: String}, 

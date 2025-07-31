@@ -56,3 +56,18 @@ exports.callback = async (req, res) => {
             res.status(505).json({err})
         }
 }
+
+exports.getPendingOrder = async (req, res) => {
+
+      try{
+
+        const order = await Order.find({status: "success", isUse: false}).sort({date: 1}).limit(1); 
+
+        res.status(200).json({status: 0, order}); 
+
+      }catch(err){
+
+            console.log(err); 
+            res.status(505).json({err})
+        }
+}
