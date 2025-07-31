@@ -8,6 +8,6 @@ const auth = require("../middleware/auth");
 
 router.post("/addorder", auth, orderCtrl.addOrder);
 router.post("/callback", orderCtrl.callback)
-router.post("/pendingorder", auth, orderCtrl.getPendingOrder)
+router.get("/pendingorder", auth, orderCtrl.getPendingOrder)
 
 module.exports = router; 
