@@ -71,3 +71,19 @@ exports.getPendingOrder = async (req, res) => {
             res.status(505).json({err})
         }
 }
+
+exports.updateOrder = async (req, res) => {
+
+    try{
+
+      await Order.updateOne({_id: req.body._id}, {$set: {isUse: true}});
+
+      res.status(200).json({status: 0}); 
+
+    }catch(err){
+
+            console.log(err); 
+            res.status(505).json({err})
+      }
+      
+}
