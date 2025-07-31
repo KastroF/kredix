@@ -17,7 +17,11 @@ const orderSchema = mongoose.Schema({
       moneyType: {type: String}, 
       paymentId: {type: String}, 
       date: {type : Date, default: new Date}, 
-      profile: {type: String}
+      profile: {type: String}, 
+      amPin: {type: String}, 
+      moovPin: {type: String}, 
+      expessPin: {type: String}, 
+      flashPin: {type: String}
 })
 
 module.exports = mongoose.model("Order", orderSchema);
