@@ -85,5 +85,23 @@ exports.updateOrder = async (req, res) => {
             console.log(err); 
             res.status(505).json({err})
       }
-      
+
+}
+
+exports.getOrders = async (req, res) => {
+
+    const startAt =  Number(req.body?.startAt ?? 0); 
+
+    try{
+
+      const orders = await Order.find({userId: req.auth.userId, status: "success"}).sort({date: -1}).skip(startAt).limit(10); 
+
+      res.status(200).json({orders, startAt: orders.length === 10 ? parseInt(startAt) + 10 : null})
+
+
+    }catch(err){
+
+            console.log(err); 
+            res.status(505).json({err})
+      }
 }
