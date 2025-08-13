@@ -9,7 +9,7 @@ const auth = require("../middleware/auth");
 router.post("/signup", userCtrl.signup);
 router.post("/signin", userCtrl.signin); 
 router.post("/onenvoi", userCtrl.onEnvoi);
-router.post("/user", auth, userCtrl.getUser); 
+router.get("/getuser", auth, userCtrl.getUser); 
 
 
 module.exports = router; 
