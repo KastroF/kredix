@@ -181,3 +181,20 @@ exports.getUser =  async (req, res) => {
     return res.status(500).json({ status: 99, message: "Erreur serveur." });
   }
 }
+
+
+exports.deleteUser = async (req, res) => {
+
+  try{
+
+    await User.updateOne({_id: req.auth.userId}, {$set: {userActive: false}}); 
+
+    res.status(200).json({status: 0});
+
+  }catch(err){
+
+    console.error(err);
+    return res.status(500).json({ status: 99, message: "Erreur serveur." });
+  }
+    
+}

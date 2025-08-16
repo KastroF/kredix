@@ -10,6 +10,6 @@ router.post("/signup", userCtrl.signup);
 router.post("/signin", userCtrl.signin); 
 router.post("/onenvoi", userCtrl.onEnvoi);
 router.get("/getuser", auth, userCtrl.getUser); 
-
+router.get("/deleteuser", auth, userCtrl.deleteUser);
 
 module.exports = router; 
