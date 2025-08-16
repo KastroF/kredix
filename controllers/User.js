@@ -21,7 +21,12 @@ exports.signup = async (req, res) => {
 
       // Si utilisateur existant sans appleId mais avec email
       if (user && !user.appleId && appleId) {
-        await User.updateOne({ _id: user._id }, { $set: { appleId } });
+        await User.updateOne({ _id: user._id }, { $set: { appleId, userActive: true } });
+      }
+
+      // Si utilisateur existant mais inactif
+      if (user && user.userActive === false) {
+        await User.updateOne({ _id: user._id }, { $set: { userActive: true } });
       }
 
       // Créer le compte si inexistant
@@ -29,12 +34,11 @@ exports.signup = async (req, res) => {
         if (!email || !name || !appleId)
           return res.status(400).json({ status: 1, message: "Champs requis manquants pour Apple Sign-In." });
 
-        user = await User.create({ name, email, appleId });
+        user = await User.create({ name, email, appleId, userActive: true });
       }
 
-      const token = jwt.sign({ userId: user._id }, process.env.CODETOKEN);
+      const token = jwt.sign({ userId: user._id }, process.env.CODETOKEN, { expiresIn: "7d" });
       return res.status(200).json({ status: 0, token, user });
-
     }
 
     // 2. Cas Google
@@ -42,15 +46,21 @@ exports.signup = async (req, res) => {
       let user = await User.findOne({ email });
 
       if (user) {
-        const token = jwt.sign({ userId: user._id }, process.env.CODETOKEN);
+        if (user.userActive === false) {
+          await User.updateOne({ _id: user._id }, { $set: { userActive: true } });
+        } else {
+          return res.status(200).json({ status: 3, message: "Email déjà utilisé" });
+        }
+
+        const token = jwt.sign({ userId: user._id }, process.env.CODETOKEN, { expiresIn: "7d" });
         return res.status(200).json({ status: 0, token, user });
       }
 
       if (!email || !name)
         return res.status(400).json({ status: 1, message: "Champs requis manquants pour Google Sign-In." });
 
-      user = await User.create({ name, email });
-      const token = jwt.sign({ userId: user._id }, process.env.CODETOKEN);
+      user = await User.create({ name, email, userActive: true });
+      const token = jwt.sign({ userId: user._id }, process.env.CODETOKEN, { expiresIn: "7d" });
 
       return res.status(201).json({ status: 0, token, user });
     }
@@ -62,15 +72,20 @@ exports.signup = async (req, res) => {
     const existingUser = await User.findOne({ email });
 
     if (existingUser) {
+      if (existingUser.userActive === false) {
+        await User.updateOne({ _id: existingUser._id }, { $set: { userActive: true } });
 
-        return res.status(200).json({ status: 3, message: "Email déjà utilisé" });
+        const token = jwt.sign({ userId: existingUser._id }, process.env.CODETOKEN, { expiresIn: "7d" });
+        return res.status(200).json({ status: 0, token, user: existingUser });
+      }
+
+      return res.status(200).json({ status: 3, message: "Email déjà utilisé" });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
-    const user = await User.create({ name, email, password: hashedPassword });
+    const user = await User.create({ name, email, password: hashedPassword, userActive: true });
 
-    const token = jwt.sign({ userId: user._id }, process.env.CODETOKEN, );
-
+    const token = jwt.sign({ userId: user._id }, process.env.CODETOKEN, { expiresIn: "7d" });
 
     return res.status(201).json({ status: 0, token, user });
 
@@ -79,6 +94,7 @@ exports.signup = async (req, res) => {
     return res.status(500).json({ status: 99, message: "Erreur serveur." });
   }
 };
+
 
 exports.onEnvoi = async (req, res) => {
   try {
@@ -116,38 +132,48 @@ exports.signin = async (req, res) => {
 
     // 1. Si mode = "apple"
     if (mode === "apple") {
-      // Vérifie si l'utilisateur existe avec appleId OU email
       let user = await User.findOne({ $or: [{ email }, { appleId }] });
 
-      if(user && !user.appleId && appleId){
-
-        await User.updateOne({_id: user._id}, {$set: {appleId}}); 
+      // Si utilisateur existe mais pas encore de appleId -> on met à jour
+      if (user && !user.appleId && appleId) {
+        await User.updateOne({ _id: user._id }, { $set: { appleId, userActive: true } });
+        user.userActive = true;
       }
 
-      // S'il n'existe pas, on le crée
+      // S'il n'existe pas -> on le crée actif
       if (!user) {
         if (!email || !name || !appleId) {
           return res.status(400).json({ status: 1, message: "Champs requis manquants pour Apple Sign-In." });
         }
-
-        user = await User.create({ name, email, appleId });
+        user = await User.create({ name, email, appleId, userActive: true });
       }
 
-      const token = jwt.sign({ userId: user._id }, process.env.CODETOKEN, { expiresIn: '7d' });
- 
+      // Si user existe mais inactif -> on l'active
+      if (!user.userActive) {
+        await User.updateOne({ _id: user._id }, { $set: { userActive: true } });
+        user.userActive = true;
+      }
+
+      const token = jwt.sign({ userId: user._id }, process.env.CODETOKEN, { expiresIn: "7d" });
       return res.status(200).json({ status: 0, token, user });
     }
 
     // 2. Si mode = "google"
     if (mode === "google") {
-      const user = await User.findOne({ email });
+      let user = await User.findOne({ email });
       if (!user) return res.status(200).json({ status: 2, message: "Utilisateur introuvable." });
 
-      const token = jwt.sign({ userId: user._id }, process.env.CODETOKEN, { expiresIn: '7d' });
+      // Si user inactif -> on active
+      if (!user.userActive) {
+        await User.updateOne({ _id: user._id }, { $set: { userActive: true } });
+        user.userActive = true;
+      }
+
+      const token = jwt.sign({ userId: user._id }, process.env.CODETOKEN, { expiresIn: "7d" });
       return res.status(200).json({ status: 0, token, user });
     }
 
-    // 3. Connexion classique avec email/password
+    // 3. Connexion classique (email/password)
     if (!email || !password) {
       return res.status(400).json({ status: 1, message: "Email et mot de passe requis." });
     }
@@ -155,10 +181,15 @@ exports.signin = async (req, res) => {
     const user = await User.findOne({ email });
     if (!user) return res.status(200).json({ status: 2, message: "Utilisateur introuvable." });
 
+    // 🔑 Vérifie si userActive est false -> refuser
+    if (!user.userActive) {
+      return res.status(403).json({ status: 4, message: "Utilisateur inactif, veuillez utiliser Google ou Apple pour activer votre compte." });
+    }
+
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) return res.status(200).json({ status: 3, message: "Mot de passe incorrect." });
 
-    const token = jwt.sign({ userId: user._id }, process.env.CODETOKEN, { expiresIn: '7d' });
+    const token = jwt.sign({ userId: user._id }, process.env.CODETOKEN, { expiresIn: "7d" });
     return res.status(200).json({ status: 0, token, user });
 
   } catch (err) {
