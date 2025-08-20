@@ -7,7 +7,7 @@ exports.addOrder = async (req, res) => {
     try{
 
         const body = req.body; 
-        body.userId = req.auth.userId ? req.auth.userId : req.body.userId;
+        body.userId = req.auth ? req.auth.userId : req.body.userId;
 
         const newOrder = new Order(body); 
 
