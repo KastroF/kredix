@@ -6,7 +6,7 @@ const orderCtrl = require("../controllers/Order");
 
 const auth = require("../middleware/auth"); 
 
-router.post("/addorder", auth, orderCtrl.addOrder);
+router.post("/addorder", orderCtrl.addOrder);
 router.post("/callback", orderCtrl.callback)
 router.get("/pendingorder", auth, orderCtrl.getPendingOrder)
 router.post("/updateorder", auth, orderCtrl.updateOrder); 
