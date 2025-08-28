@@ -37,7 +37,7 @@ exports.signup = async (req, res) => {
         user = await User.create({ name, email, appleId, userActive: true });
       }
 
-      const token = jwt.sign({ userId: user._id }, process.env.CODETOKEN, { expiresIn: "7d" });
+      const token = jwt.sign({ userId: user._id }, process.env.CODETOKEN);
       return res.status(200).json({ status: 0, token, user });
     }
 
@@ -52,7 +52,7 @@ exports.signup = async (req, res) => {
           return res.status(200).json({ status: 3, message: "Email déjà utilisé" });
         }
 
-        const token = jwt.sign({ userId: user._id }, process.env.CODETOKEN, { expiresIn: "7d" });
+        const token = jwt.sign({ userId: user._id }, process.env.CODETOKEN);
         return res.status(200).json({ status: 0, token, user });
       }
 
@@ -60,7 +60,7 @@ exports.signup = async (req, res) => {
         return res.status(400).json({ status: 1, message: "Champs requis manquants pour Google Sign-In." });
 
       user = await User.create({ name, email, userActive: true });
-      const token = jwt.sign({ userId: user._id }, process.env.CODETOKEN, { expiresIn: "7d" });
+      const token = jwt.sign({ userId: user._id }, process.env.CODETOKEN);
 
       return res.status(201).json({ status: 0, token, user });
     }
@@ -75,7 +75,7 @@ exports.signup = async (req, res) => {
       if (existingUser.userActive === false) {
         await User.updateOne({ _id: existingUser._id }, { $set: { userActive: true } });
 
-        const token = jwt.sign({ userId: existingUser._id }, process.env.CODETOKEN, { expiresIn: "7d" });
+        const token = jwt.sign({ userId: existingUser._id }, process.env.CODETOKEN);
         return res.status(200).json({ status: 0, token, user: existingUser });
       }
 
@@ -85,7 +85,7 @@ exports.signup = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = await User.create({ name, email, password: hashedPassword, userActive: true });
 
-    const token = jwt.sign({ userId: user._id }, process.env.CODETOKEN, { expiresIn: "7d" });
+    const token = jwt.sign({ userId: user._id }, process.env.CODETOKEN);
 
     return res.status(201).json({ status: 0, token, user });
 
@@ -154,7 +154,7 @@ exports.signin = async (req, res) => {
         user.userActive = true;
       }
 
-      const token = jwt.sign({ userId: user._id }, process.env.CODETOKEN, { expiresIn: "7d" });
+      const token = jwt.sign({ userId: user._id }, process.env.CODETOKEN);
       return res.status(200).json({ status: 0, token, user });
     }
 
@@ -169,7 +169,7 @@ exports.signin = async (req, res) => {
         user.userActive = true;
       }
 
-      const token = jwt.sign({ userId: user._id }, process.env.CODETOKEN, { expiresIn: "7d" });
+      const token = jwt.sign({ userId: user._id }, process.env.CODETOKEN);
       return res.status(200).json({ status: 0, token, user });
     }
 
@@ -189,7 +189,7 @@ exports.signin = async (req, res) => {
     const valid = await bcrypt.compare(password, user.password);
     if (!valid) return res.status(200).json({ status: 3, message: "Mot de passe incorrect." });
 
-    const token = jwt.sign({ userId: user._id }, process.env.CODETOKEN, { expiresIn: "7d" });
+    const token = jwt.sign({ userId: user._id }, process.env.CODETOKEN);
     return res.status(200).json({ status: 0, token, user });
 
   } catch (err) {
