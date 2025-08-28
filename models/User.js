@@ -7,7 +7,8 @@ const userSchema = mongoose.Schema({
         password: {type: String}, 
         app: {type: String}, 
         userActive: {type: Boolean, default: true}, 
-        appleId: { type: String, unique: true, sparse: true }
+        appleId: { type: String, unique: true, sparse: true }, 
+        date: {type: Date, default: new Date}
 
 })
 
