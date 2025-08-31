@@ -16,7 +16,7 @@ const orderSchema = mongoose.Schema({
       phone: {type: String}, 
       moneyType: {type: String}, 
       paymentId: {type: String}, 
-      date: {type : Date, default: new Date}, 
+      date: {type : Date, default: Date.now}, 
       profile: {type: String}, 
       amPin: {type: String}, 
       moovPin: {type: String}, 
