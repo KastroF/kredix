@@ -4,6 +4,7 @@ const User = require('../models/User');
 require('dotenv').config();
 const sendNotification = require("../utils/SendPushNotification"); 
 const DeviceToken = require('../models/DeviceToken');
+const Montant = require('../models/Montant');
 
 
 // -------- SIGNUP --------
@@ -228,4 +229,22 @@ exports.deleteUser = async (req, res) => {
     return res.status(500).json({ status: 99, message: "Erreur serveur." });
   }
     
+}
+
+
+exports.getAmounts = async (req, res) => {
+
+    try{
+
+      const montants = await Montant.find(); 
+
+      res.status(200).json({status: 0, montants}); 
+
+      
+
+    }catch(err){
+
+      console.log(err); 
+      res.status(505).json({err})
+    }
 }
