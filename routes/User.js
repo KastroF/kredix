@@ -11,5 +11,5 @@ router.post("/signin", userCtrl.signin);
 router.post("/onenvoi", userCtrl.onEnvoi);
 router.get("/getuser", auth, userCtrl.getUser); 
 router.get("/deleteuser", auth, userCtrl.deleteUser);
-
+router.get("/montants", auth, userCtrl.getAmounts)
 module.exports = router; 
