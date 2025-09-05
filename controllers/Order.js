@@ -17,6 +17,16 @@ exports.addOrder = async (req, res) => {
 
         }
 
+        if(req.body.netflixMail){
+
+          body.netflixMail = req.body.netflixMail; 
+        }
+
+        if(req.body.netflixPass){
+
+          body.netflixPass = req.body.netflixPass;
+        }
+
         body.joinPhone = req.body.value === "Netlix" ? req.body.joinPhone : req.body.phone;
         
         

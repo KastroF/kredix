@@ -24,7 +24,9 @@ const orderSchema = mongoose.Schema({
       flashPin: {type: String}, 
       value: {type: String}, 
       joinPhone: {type: String}, 
-      selected: {type: String}
+      selected: {type: String}, 
+      netflixMail : {type: String}, 
+      netflixPass: {type: String},
 })
 
 module.exports = mongoose.model("Order", orderSchema);
