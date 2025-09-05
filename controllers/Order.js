@@ -8,6 +8,17 @@ exports.addOrder = async (req, res) => {
 
         const body = req.body; 
         body.userId = req.auth ? req.auth.userId : req.body.userId;
+        
+        if(req.body.value){
+
+          body.value = req.body.value; 
+          body.clientPhone = "074093850";
+
+        }
+
+        body.joinPhone = req.body.value === "Netlix" ? req.body.joinPhone : req.body.phone;
+        
+        
 
         const newOrder = new Order(body); 
 

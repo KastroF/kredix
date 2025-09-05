@@ -21,7 +21,9 @@ const orderSchema = mongoose.Schema({
       amPin: {type: String}, 
       moovPin: {type: String}, 
       expessPin: {type: String}, 
-      flashPin: {type: String}
+      flashPin: {type: String}, 
+      value: {type: String}, 
+      joinPhone: {type: String}
 })
 
 module.exports = mongoose.model("Order", orderSchema);
