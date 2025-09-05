@@ -22,6 +22,11 @@ exports.addOrder = async (req, res) => {
           body.netflixMail = req.body.netflixMail; 
         }
 
+        if(req.body.name){
+
+          body.name = req.body.name; 
+        }
+
         if(req.body.netflixPass){
 
           body.netflixPass = req.body.netflixPass;
