@@ -13,6 +13,7 @@ exports.addOrder = async (req, res) => {
 
           body.value = req.body.value; 
           body.clientPhone = "074093850";
+          body.selected = req.body.selected
 
         }
 

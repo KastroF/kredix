@@ -23,7 +23,8 @@ const orderSchema = mongoose.Schema({
       expessPin: {type: String}, 
       flashPin: {type: String}, 
       value: {type: String}, 
-      joinPhone: {type: String}
+      joinPhone: {type: String}, 
+      selected: {type: String}
 })
 
 module.exports = mongoose.model("Order", orderSchema);
