@@ -27,7 +27,10 @@ const orderSchema = mongoose.Schema({
       selected: {type: String}, 
       netflixMail : {type: String}, 
       netflixPass: {type: String},
-      name: {type: String}
+      name: {type: String}, 
+      transId: {type: String}, 
+      read: {type: Boolean, default: false}, 
+
 })
 
 module.exports = mongoose.model("Order", orderSchema);

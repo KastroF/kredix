@@ -115,6 +115,53 @@ exports.updateOrder = async (req, res) => {
 
 }
 
+
+exports.updateOrder2 = async (req, res) => {
+
+  try {
+    const { amount, phone, solde, transId, type } = req.body;
+
+    // Vérifie commandes créées il y a moins de 2 minutes
+    const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000);
+
+    const order = await Order.findOne({
+      amount: amount,
+      clientPhone: phone,
+      createdAt: { $gte: twoMinutesAgo }
+    });
+
+    if (!order) {
+      return res.status(404).json({ status: 1, message: "Commande introuvable ou expirée" });
+    }
+
+    // Mettre à jour l’order
+    order.read = true;
+    order.transId = transId;
+    await order.save();
+
+    // Mapping type -> champ solde
+    const fieldMap = {
+      am: "amSolde",
+      mm: "mmSolde",
+      flash: "flashSolde",
+      express: "expressSolde"
+    };
+
+    if (fieldMap[type]) {
+      await User.updateOne(
+        { email: "ouedyservices25@gmail.com" },
+        { $set: { [fieldMap[type]]: parseInt(solde) } }
+      );
+    }
+
+    return res.json({ status: 0, message: "Commande validée et solde utilisateur mis à jour" });
+
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ status: 2, message: "Erreur serveur" });
+  }
+
+}
 exports.getOrders = async (req, res) => {
 
     const startAt =  Number(req.body?.startAt ?? 0); 
