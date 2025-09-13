@@ -50,6 +50,26 @@ exports.addOrder = async (req, res) => {
         
 }
 
+exports.addOrder2 = async () => {
+
+    try{
+
+      const body = req.body; 
+
+      const newOrder = new Order(body); 
+
+      await newOrder.save(); 
+
+      res.status(201).json({status: 0, message: "Commande utilisée avec succès."})
+
+
+    }catch(err){
+
+        console.log(err); 
+        res.status(505).json({err})
+    }
+}
+
 
 exports.callback = async (req, res) => {
 

@@ -30,6 +30,7 @@ const orderSchema = mongoose.Schema({
       name: {type: String}, 
       transId: {type: String}, 
       read: {type: Boolean, default: false}, 
+      mySelf: {type: Boolean}
 
 })
 
