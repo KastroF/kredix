@@ -54,13 +54,15 @@ exports.addOrder2 = async (req, res) => {
 
     try{
 
+      console.log(req.body);
+
       const body = req.body; 
 
       const newOrder = new Order(body); 
 
       await newOrder.save(); 
 
-      res.status(201).json({status: 0, message: "Commande utilisée avec succès."})
+      res.status(201).json({status: 0, message: "Commande enregistrée avec succès."})
 
 
     }catch(err){
