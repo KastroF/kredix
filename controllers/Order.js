@@ -50,7 +50,7 @@ exports.addOrder = async (req, res) => {
         
 }
 
-exports.addOrder2 = async () => {
+exports.addOrder2 = async (req, res) => {
 
     try{
 
