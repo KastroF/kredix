@@ -141,6 +141,9 @@ exports.updateOrder = async (req, res) => {
 exports.updateOrder2 = async (req, res) => {
 
   try {
+
+    console.log("on update", req.body); 
+    
     const { amount, phone, solde, transId, type } = req.body;
 
     // Vérifie commandes créées il y a moins de 2 minutes
