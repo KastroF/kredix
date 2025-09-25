@@ -150,15 +150,16 @@ exports.updateOrder2 = async (req, res) => {
     const { amount, phone, solde, transId, type } = req.body;
 
     // Vérifie commandes créées il y a moins de 2 minutes
-    const twoMinutesAgo = new Date(Date.now() - 2 * 60 * 1000);
+    const fourMinutesAgo = new Date(Date.now() - 4 * 60 * 1000);
 
     const order = await Order.findOne({
       amount: amount,
       clientPhone: phone,
-      createdAt: { $gte: twoMinutesAgo }
+      date: { $gte: fourMinutesAgo }
     });
 
     if (!order) {
+      
       return res.status(404).json({ status: 1, message: "Commande introuvable ou expirée" });
     }
 
