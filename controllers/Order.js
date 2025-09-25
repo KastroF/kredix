@@ -140,11 +140,12 @@ exports.updateOrder = async (req, res) => {
 
 exports.updateOrder2 = async (req, res) => {
 
-  console.log("on update", req.body); 
+
 
   try {
 
    
+    console.log("on update", req.body); 
     
     const { amount, phone, solde, transId, type } = req.body;
 
