@@ -1,5 +1,7 @@
 const DeviceToken = require("../models/DeviceToken");
 const Order = require("../models/Order");
+const User = require("../models/User"); 
+
 const sendNotification = require("../utils/SendPushNotification"); 
 
 exports.addOrder = async (req, res) => {
