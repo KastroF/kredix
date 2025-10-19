@@ -7,6 +7,14 @@ exports.addTontine = async (req, res) => {
 
         const {name, headname, description} = req.body; 
 
+        const count = await Tontine.countDocuments({name}); 
+
+        if(count === 0){
+
+            res.status(200).json({status: 1, message: "Une tontine ayant ce nom existe déjà"})
+
+        }
+
         const newTontine = new Tontine({
             name, 
             headname, 
