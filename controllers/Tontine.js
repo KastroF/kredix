@@ -9,9 +9,9 @@ exports.addTontine = async (req, res) => {
 
         const count = await Tontine.countDocuments({name}); 
 
-        if(count === 0){
+        if(count > 0){
 
-            res.status(200).json({status: 1, message: "Une tontine ayant ce nom existe déjà"})
+            return res.status(200).json({status: 1, message: "Une tontine ayant ce nom existe déjà"})
 
         }
 
@@ -21,7 +21,7 @@ exports.addTontine = async (req, res) => {
             description
         })
     
-        newTontine.save(); 
+        await newTontine.save(); 
     
         res.status(201).json({status: 0}); 
 
