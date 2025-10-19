@@ -58,11 +58,14 @@ app.use((req, res, next) => {
 const userRouter = require("./routes/User"); 
 const tokenRouter = require("./routes/DeviceToken"); 
 const orderRouter = require("./routes/Order"); 
+const tontineRouter = require("./routes/Tontine"); 
+
 
 //app.use("/", (req, res) => {res.status(201).json({message: "On regarde tres bien. et on aime"})})
 app.use("/api/user", userRouter)
 app.use("/api/token", tokenRouter);
 app.use("/api/order", orderRouter);
+app.use("/api/tontine", tontineRouter);
 
 
 
