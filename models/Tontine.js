@@ -7,6 +7,7 @@ const tontineSchema = mongoose.Schema({
         headname: {type: String}, 
         created_at: {type: Date, default: Date.now}, 
         description: {type: String},
+        code: {type: String},
         active: {type : Boolean}
 })
 

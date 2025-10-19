@@ -1,5 +1,16 @@
 const Tontine = require("../models/Tontine"); 
 
+function generateCode(length = 6) {
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()';
+    let code = '';
+    for (let i = 0; i < length; i++) {
+      const randomIndex = Math.floor(Math.random() * chars.length);
+      code += chars[randomIndex];
+    }
+    return code;
+  }
+
+
 
 exports.addTontine = async (req, res) => {
 
@@ -15,15 +26,19 @@ exports.addTontine = async (req, res) => {
 
         }
 
+        const code = generateCode(); 
+
+
         const newTontine = new Tontine({
             name, 
             headname, 
-            description
+            description, 
+            code
         })
     
         await newTontine.save(); 
     
-        res.status(201).json({status: 0}); 
+        res.status(201).json({status: 0, code}); 
 
 
     }catch(err){
