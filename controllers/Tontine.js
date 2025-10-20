@@ -18,7 +18,9 @@ exports.addTontine = async (req, res) => {
 
         const {name, headname, description} = req.body; 
 
-        const count = await Tontine.countDocuments({name}); 
+        const count = await Tontine.countDocuments({
+            name: { $regex: `^${name}$`, $options: "i" }
+          });
 
         if(count > 0){
 
