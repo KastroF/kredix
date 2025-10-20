@@ -11,6 +11,27 @@ function generateCode(length = 6) {
   }
 
 
+  exports.getTontines = async (req, res) => {
+
+    try{
+
+        const myTontines = await Tontine.find({userId: req.auth.userId}).sort({created_at: -1})
+        .limit(4); 
+
+        const otherTontines = await Tontine.find({ userId: { $ne: req.auth.userId } })
+        .sort({ created_at: -1 })
+        .limit(6);
+
+        res.status(200).json({status: 0, myTontines, otherTontines});
+        
+
+    }catch(err){
+
+        console.log(err); 
+        res.status(505).json({err}); 
+    }
+
+  }
 
 exports.addTontine = async (req, res) => {
 
