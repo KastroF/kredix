@@ -8,7 +8,8 @@ const tontineSchema = mongoose.Schema({
         created_at: {type: Date, default: Date.now}, 
         description: {type: String},
         code: {type: String},
-        active: {type : Boolean}
+        active: {type : Boolean}, 
+        userId: {type: String}
 })
 
 module.exports = mongoose.model("Tontine", tontineSchema);
