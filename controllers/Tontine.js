@@ -23,7 +23,7 @@ function generateCode(length = 6) {
         .limit(6);
 
         res.status(200).json({status: 0, myTontines, otherTontines});
-        
+
 
     }catch(err){
 
@@ -73,4 +73,32 @@ exports.addTontine = async (req, res) => {
 
 
     
+}
+
+exports.testCode = async (req, res) => {
+
+
+        try{
+
+            const {code, _id} = req.body
+
+            const tontine = await Tontine.findOne({_id}); 
+
+
+
+            if(tontine.code === code){
+
+                    return res.status(200).json({status: 0})
+            
+                }else{
+
+                    return res.status(200).json({status: 1});
+                }
+
+        }catch(err){
+
+                console.log(err); 
+                res.status(500).json({err})
+        }
+
 }
