@@ -114,6 +114,7 @@ exports.getPendingOrder = async (req, res) => {
 
         const order = await Order.find({status: "success", isUse: false}).sort({date: 1}).limit(1); 
 
+        console.log("C'est l'ordre");
         res.status(200).json({status: 0, order}); 
 
       }catch(err){
