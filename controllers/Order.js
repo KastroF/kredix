@@ -115,7 +115,10 @@ exports.getPendingOrder = async (req, res) => {
         const order = await Order.find({status: "success", isUse: false}).sort({date: 1}).limit(1); 
 
         console.log("C'est l'ordre", order);
-        res.status(200).json({status: 0, order}); 
+
+        const user = await User.findById(req.auth.userId);
+
+        res.status(200).json({status: 0, order, user}); 
 
       }catch(err){
 
