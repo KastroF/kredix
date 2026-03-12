@@ -22,12 +22,6 @@ const orderSchema = mongoose.Schema({
       moovPin: {type: String}, 
       expessPin: {type: String}, 
       flashPin: {type: String}, 
-      value: {type: String}, 
-      joinPhone: {type: String}, 
-      selected: {type: String}, 
-      netflixMail : {type: String}, 
-      netflixPass: {type: String},
-      name: {type: String}, 
       transId: {type: String}, 
       read: {type: Boolean, default: false}, 
       mySelf: {type: Boolean}

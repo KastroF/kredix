@@ -8,33 +8,8 @@ exports.addOrder = async (req, res) => {
 
     try{
 
-        const body = req.body; 
+        const body = req.body;
         body.userId = req.auth ? req.auth.userId : req.body.userId;
-        
-        if(req.body.value){
-
-          body.value = req.body.value; 
-          body.clientPhone = "074093850";
-          body.selected = req.body.selected
-
-        }
-
-        if(req.body.netflixMail){
-
-          body.netflixMail = req.body.netflixMail; 
-        }
-
-        if(req.body.name){
-
-          body.name = req.body.name; 
-        }
-
-        if(req.body.netflixPass){
-
-          body.netflixPass = req.body.netflixPass;
-        }
-
-        body.joinPhone = req.body.value === "Netlix" ? req.body.joinPhone : req.body.phone;
         
         
 
@@ -81,18 +56,33 @@ exports.callback = async (req, res) => {
 
         try{
 
-           await Order.updateOne({paymentId: req.body.paymentId}, {$set: {status: "success"}}); 
+           await Order.updateOne({paymentId: req.body.paymentId}, {$set: {status: "success"}});
 
-           const order = await Order.findOne({paymentId: req.body.paymentId}); 
+           const order = await Order.findOne({paymentId: req.body.paymentId});
+
+           // Recharge revendeur : créditer le solde virtuel avec bonus
+           if (order.type === "recharge_flash" || order.type === "recharge_express") {
+             const bonusPercent = order.type === "recharge_flash" ? 5 : 6;
+             const creditAmount = Math.round(order.amount + (order.amount * bonusPercent / 100));
+             const soldeField = order.type === "recharge_flash" ? "flashSolde" : "expressSolde";
+
+             await User.updateOne(
+               { _id: order.userId },
+               { $inc: { [soldeField]: creditAmount } }
+             );
+           }
 
            const tokens = await DeviceToken.find({ userId: order.userId });
 
+           const notifBody = (order.type === "recharge_flash" || order.type === "recharge_express")
+             ? `Votre recharge revendeur de ${order.amount} FCFA a été validée. Votre solde a été crédité avec le bonus. Merci.`
+             : `Félicitations, votre paiement s'est effectué avec succès, votre transaction vers le ${order.clientPhone} est en cours; Merci.`;
 
            for (let t of tokens) {
              await sendNotification({
                token: t.token,
                title: "Kredix",
-               body: `Félicitations, votre paiement s'est effectué avec succès, votre transaction vers le ${order.clientPhone} est en cours; Merci.`,
+               body: notifBody,
                badge: 1,
                data: {},
              });
@@ -103,7 +93,7 @@ exports.callback = async (req, res) => {
 
         }catch(err){
 
-            console.log(err); 
+            console.log(err);
             res.status(505).json({err})
         }
 }
@@ -197,6 +187,83 @@ exports.updateOrder2 = async (req, res) => {
   }
 
 }
+exports.checkOrderStatus = async (req, res) => {
+
+  try {
+
+    const { paymentId } = req.params;
+
+    const order = await Order.findOne({ paymentId });
+
+    if (!order) {
+      return res.status(404).json({ status: 1, message: "Commande introuvable" });
+    }
+
+    res.status(200).json({ status: 0, orderStatus: order.status, isUse: order.isUse });
+
+  } catch (err) {
+    console.log(err);
+    res.status(500).json({ status: 2, message: "Erreur serveur" });
+  }
+}
+
+exports.addRevendeurOrder = async (req, res) => {
+
+  try {
+
+    const { clientPhone, amount, creditType } = req.body;
+    const userId = req.auth.userId;
+
+    if (!clientPhone || !amount || !creditType) {
+      return res.status(400).json({ status: 1, message: "Champs manquants" });
+    }
+
+    if (!["flash", "express"].includes(creditType)) {
+      return res.status(400).json({ status: 1, message: "Type de crédit invalide" });
+    }
+
+    const soldeField = creditType === "flash" ? "flashSolde" : "expressSolde";
+    const user = await User.findById(userId);
+
+    if (!user) {
+      return res.status(404).json({ status: 1, message: "Utilisateur introuvable" });
+    }
+
+    const currentSolde = user[soldeField] || 0;
+
+    if (currentSolde < parseInt(amount)) {
+      return res.status(400).json({ status: 1, message: `Solde ${creditType === "flash" ? "Flash" : "Express"} insuffisant. Solde actuel : ${currentSolde} FCFA` });
+    }
+
+    // Décrémenter le solde
+    await User.updateOne(
+      { _id: userId },
+      { $inc: { [soldeField]: -parseInt(amount) } }
+    );
+
+    // Créer la commande directement en "success" pour que le téléphone local la traite
+    const newOrder = new Order({
+      userId,
+      amount: parseInt(amount),
+      clientPhone,
+      type: "credit",
+      moneyType: creditType === "flash" ? "AM" : "MOOV",
+      status: "success",
+      isUse: false,
+      date: Date.now()
+    });
+
+    await newOrder.save();
+
+    res.status(201).json({ status: 0, message: "Envoi de crédit initié avec succès", solde: currentSolde - parseInt(amount) });
+
+  } catch (err) {
+
+    console.log(err);
+    res.status(500).json({ status: 2, message: "Erreur serveur" });
+  }
+}
+
 exports.getOrders = async (req, res) => {
 
     const startAt =  Number(req.body?.startAt ?? 0); 
