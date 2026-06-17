@@ -70,6 +70,8 @@ exports.callback = async (req, res) => {
                { _id: order.userId },
                { $inc: { [soldeField]: creditAmount } }
              );
+
+             await Order.updateOne({ paymentId: req.body.paymentId }, { $set: { isUse: true } });
            }
 
            const tokens = await DeviceToken.find({ userId: order.userId });

@@ -1,5 +1,6 @@
 const axios = require("axios");
 const { GoogleAuth } = require("google-auth-library");
+const DeviceToken = require("../models/DeviceToken");
 require('dotenv').config();
 
 const SERVICE_ACCOUNT_KEY_FILE = "./my-service-account.json"; // adapte le chemin si besoin
@@ -45,11 +46,17 @@ async function sendNotification({ token, title, body, badge = 1, data = {} }) {
     console.log("✅ Notification envoyée :", response.data);
     return { success: true, response: response.data };
   } catch (error) {
-    console.error(
-      "❌ Erreur lors de l’envoi de la notification :",
-      error.response?.data || error.message
-    );
-    return { success: false, error: error.response?.data || error.message };
+    const errData = error.response?.data;
+    console.error("❌ Erreur lors de l’envoi de la notification :", errData || error.message);
+
+    // Supprimer le token invalide pour éviter de le réutiliser
+    const errorCode = errData?.error?.details?.[0]?.errorCode || errData?.error?.status;
+    if (errorCode === "UNREGISTERED" || errorCode === "INVALID_ARGUMENT") {
+      await DeviceToken.deleteOne({ token }).catch(() => {});
+      console.log("🗑️ Token FCM invalide supprimé :", token);
+    }
+
+    return { success: false, error: errData || error.message };
   }
 }
 
